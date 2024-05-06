@@ -113,6 +113,7 @@ class TrainingArguments(transformers.TrainingArguments):
 
 
 def maybe_zero_3(param, ignore_status=False, name=None):
+    """
     from deepspeed import zero
     from deepspeed.runtime.zero.partition_parameters import ZeroParamStatus
     if hasattr(param, "ds_id"):
@@ -122,7 +123,8 @@ def maybe_zero_3(param, ignore_status=False, name=None):
         with zero.GatheredParameters([param]):
             param = param.data.detach().cpu().clone()
     else:
-        param = param.detach().cpu().clone()
+    """
+    param = param.detach().cpu().clone()
     return param
 
 
