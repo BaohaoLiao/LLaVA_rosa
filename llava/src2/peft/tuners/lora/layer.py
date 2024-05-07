@@ -518,6 +518,7 @@ class Linear(nn.Module, LoraLayer):
         elif adapter_names is not None:
             result = self._mixed_batch_forward(x, *args, adapter_names=adapter_names, **kwargs)
         elif self.merged:
+            print("hi")
             result = self.base_layer(x, *args, **kwargs)
         else:
             result = self.base_layer(x, *args, **kwargs)
