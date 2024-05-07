@@ -518,10 +518,8 @@ class Linear(nn.Module, LoraLayer):
         elif adapter_names is not None:
             result = self._mixed_batch_forward(x, *args, adapter_names=adapter_names, **kwargs)
         elif self.merged:
-            print("hi merge", self.merged)
             result = self.base_layer(x, *args, **kwargs)
         else:
-            print("hi normal", self.merged)
             result = self.base_layer(x, *args, **kwargs)
             torch_result_dtype = result.dtype
             for active_adapter in self.active_adapters:
