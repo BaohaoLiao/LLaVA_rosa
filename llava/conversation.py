@@ -13,6 +13,7 @@ class SeparatorStyle(Enum):
     MPT = auto()
     PLAIN = auto()
     LLAMA_2 = auto()
+    LILIUM_2 = auto()
 
 
 @dataclasses.dataclass
@@ -90,6 +91,28 @@ class Conversation:
                         ret += " " + message + " " + self.sep2
                 else:
                     ret += ""
+            ret = ret.lstrip(self.sep)
+        elif self.sep_style == SeparatorStyle.LILIUM_2:
+            wrap_sys = lambda msg: f"<<SYS>>\n{msg}\n<</SYS>>\n\n" if len(msg) > 0 else msg
+            wrap_inst = lambda msg: f"[INST] {msg} [/INST]"
+            ret = ""
+
+            for i, (role, message) in enumerate(messages):
+                if i == 0:
+                    assert message, "first message should not be none"
+                    assert role == self.roles[0], "first message should come from user"
+                if message:
+                    if type(message) is tuple:
+                        message, _, _ = message
+                    if i == 0: message = wrap_sys(self.system) + message
+                    if i % 2 == 0:
+                        message = wrap_inst(message)
+                        ret += self.sep + message
+                    else:
+                        ret += " " + message + " " + self.sep2
+                else:
+                    ret += ""
+                
             ret = ret.lstrip(self.sep)
         elif self.sep_style == SeparatorStyle.PLAIN:
             seps = [self.sep, self.sep2]
@@ -277,6 +300,19 @@ conv_llava_llama_2 = Conversation(
     sep2="</s>",
 )
 
+conv_llava_lilium_2 = Conversation(
+    system="You are a helpful language and vision assistant. "
+           "You are able to understand the visual content that the user provides, "
+           "and assist the user with a variety of tasks using natural language.",
+    roles=("USER", "ASSISTANT"),
+    version="lilium_v2",
+    messages=(),
+    offset=0,
+    sep_style=SeparatorStyle.LILIUM_2,
+    sep="<s>",
+    sep2="</s>",
+)
+
 conv_mpt = Conversation(
     system="""<|im_start|>system
 A conversation between a user and an LLM-based AI assistant. The assistant gives helpful and honest answers.""",
@@ -389,6 +425,7 @@ conv_templates = {
     "llava_llama_2": conv_llava_llama_2,
 
     "mpt": conv_mpt,
+    "llava_lilium_2": conv_llava_lilium_2
 }
 
 

@@ -66,7 +66,10 @@ def eval_model(args):
         conv = conv_templates[args.conv_mode].copy()
         conv.append_message(conv.roles[0], qs)
         conv.append_message(conv.roles[1], None)
-        prompt = conv.get_prompt()
+        if "lilium" in args.model_base.lower():
+            prompt = conv.sep + conv.get_prompt()
+        else:
+            prompt = conv.get_prompt()
 
         input_ids = tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).cuda()
 
